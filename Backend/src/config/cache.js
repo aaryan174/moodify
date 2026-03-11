@@ -1,6 +1,5 @@
-const { default: Redis } = require("ioredis")
 
-const redis = require("ioredis").default
+const Redis = require("ioredis").default
 
 
 const redis = new Redis({

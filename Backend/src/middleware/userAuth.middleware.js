@@ -6,17 +6,17 @@ const userModel = require("../model/user.model")
 async function userAuth(req, res, next) {
     const token = req.cookies.token;
 
-    if(!token){
+    if (!token) {
         return res.status(400).json({
-            message:"token not provided"
+            message: "token not provided"
         })
     }
 
     const isTokenBlackListed = await redis.get(token)
 
-    if(isTokenBlackListed){
+    if (isTokenBlackListed) {
         return res.status(401).json({
-            message:"Invalid Token"
+            message: "Invalid Token"
         })
     }
 
@@ -27,12 +27,12 @@ async function userAuth(req, res, next) {
             process.env.TOKEN
         )
 
-        res.user = decoded
+        req.user = decoded
         next()
 
     } catch (error) {
         return res.status(401).json({
-            message:"Invalid Token"
+            message: "Invalid Token"
         })
     }
 }
