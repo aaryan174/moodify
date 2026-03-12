@@ -1,7 +1,24 @@
 import { Link } from "react-router-dom"
 import "../style/login.css"
+import { useAuth } from "../hooks/useAuth"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 const Login = () => {
+
+    const {loading, handleLogin} = useAuth()
+    const navigate = useNavigate();
+
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        await handleLogin({email, password, username})
+        navigate("/")
+    }
+
   return (
          <div className="auth-container">
             <div className="auth-background"></div>
@@ -16,17 +33,29 @@ const Login = () => {
                     <h2 className="auth-title">Vibe In</h2>
                     <p className="auth-subtitle">Welcome back! Time to drop the beat.</p>
                 </div>
-                
+
 {/* yha se form start hai */}
 
-                <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <input type="text" placeholder="Username" className="auth-input" required />
+                        <input
+                         value={username}
+                          onChange={(e)=> setUsername(e.target.value)}
+                           type="text"
+                            placeholder="Username"
+                             className="auth-input"
+                              required />
                         <span className="input-highlight"></span>
                     </div>
 
                     <div className="input-group">
-                        <input type="password" placeholder="Password" className="auth-input" required />
+                        <input
+                        value={password}
+                        onChange={(e)=> setPassword(e.target.value)} 
+                        type="password"
+                         placeholder="Password"
+                          className="auth-input"
+                           required />
                         <span className="input-highlight"></span>
                     </div>
 

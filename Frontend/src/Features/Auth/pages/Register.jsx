@@ -1,8 +1,26 @@
-import React from 'react'
+import React, {useState} from 'react'
 import '../style/register.css'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
+
+    const {loading, handleRegister} = useAuth();
+    const navigate = useNavigate();
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        await handleRegister({username, email, password})
+        navigate("/")
+    }
+
+
+
   return (
      <div className="register-container">
             {/* Background Image Container */}
@@ -20,20 +38,32 @@ const Register = () => {
                     <h2 className="register-title">Join the Vibe</h2>
                     <p className="register-subtitle">Create an account to start listening.</p>
                 </div>
+{/* yha se form ki starting  */}
 
-                <form className="register-form" onSubmit={(e) => e.preventDefault()}>
+
+
+                <form className="register-form" onSubmit={handleSubmit}>
                     <div className="register-input-group">
-                        <input type="text" placeholder="Username" className="register-input" required />
+                        <input
+                        value={username} 
+                        onChange={(e)=>setUsername(e.target.value)}
+                         type="text" placeholder="Username" className="register-input" required />
                         <span className="register-input-highlight"></span>
                     </div>
 
                     <div className="register-input-group">
-                        <input type="email" placeholder="Email Address" className="register-input" required />
+                        <input
+                        value={email} 
+                        onChange={(e)=>setEmail(e.target.value)}
+                        type="email" placeholder="Email Address" className="register-input" required />
                         <span className="register-input-highlight"></span>
                     </div>
 
                     <div className="register-input-group">
-                        <input type="password" placeholder="Password" className="register-input" required />
+                        <input 
+                        value={password} 
+                        onChange={(e)=>setPassword(e.target.value)}
+                        type="password" placeholder="Password" className="register-input" required />
                         <span className="register-input-highlight"></span>
                     </div>
 
