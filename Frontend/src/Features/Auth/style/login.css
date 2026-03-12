@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    /* Prevent scrolling */
+}
+
+.auth-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center the form over the background */
+    background-color: #1a0f35;
+}
+
+/* Background image of the Dj Capybara Character */
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Using the exact vibrant 3D character DJ image provided */
+    background: url('../../../../public/assets/project\ moodi.png') center center / cover no-repeat;
+    z-index: 1;
+}
+
+/* Color overlay to ensure the form stands out and blends with the neon vibe */
+.auth-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(35, 12, 77, 0.3) 0%, rgba(13, 3, 33, 0.8) 100%);
+}
+
+/* Glassmorphism Card Style */
+.auth-card {
+    position: relative;
+    z-index: 2;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.08);
+    /* Transparent dark base */
+    backdrop-filter: blur(24px);
+    /* Heavy frost effect */
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Delicate white border */
+    border-radius: 28px;
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.logo-img {
+    width: 80px;
+    /* Controls the size of the logo */
+    height: 80px;
+    /* Ensure height matches width for a perfect circle */
+    object-fit: cover;
+    /* Fill the circle without stretching */
+    border-radius: 50%;
+}
+
+.auth-title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+}
+
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    font-size: 15px;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.auth-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.auth-input:focus {
+    background: rgba(0, 0, 0, 0.35);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 8px;
+    /* Neon vibe matching the image */
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(58, 123, 213, 0.4);
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(58, 123, 213, 0.6);
+    background: linear-gradient(135deg, #15d8ff 0%, #4b8df2 100%);
+}
+
+.auth-submit-btn:active {
+    transform: translateY(1px);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 28px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.auth-divider span {
+    padding: 0 16px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+.social-btns {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    justify-content: center;
+}
+
+.social-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.invert-icon {
+    filter: invert(1);
+    /* makes the black apple logo white */
+}
+
+.auth-footer-text {
+    margin-top: 32px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.auth-footer-text strong {
+    color: #00d2ff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.auth-footer-text strong:hover {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}
