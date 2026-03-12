@@ -5,7 +5,6 @@ const Login = () => {
   return (
          <div className="auth-container">
             <div className="auth-background"></div>
-
             <div className="auth-card">
 
                 <div className="auth-header">
@@ -17,6 +16,8 @@ const Login = () => {
                     <h2 className="auth-title">Vibe In</h2>
                     <p className="auth-subtitle">Welcome back! Time to drop the beat.</p>
                 </div>
+                
+{/* yha se form start hai */}
 
                 <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
                     <div className="input-group">
