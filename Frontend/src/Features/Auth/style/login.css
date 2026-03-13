@@ -29,8 +29,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Using the exact vibrant 3D character DJ image provided */
-    background: url('../../../../public/assets/project\ moodi.png') center center / cover no-repeat;
+     background: url('./assets/project moodi.png') center center / cover no-repeat;
     z-index: 1;
 }
 
