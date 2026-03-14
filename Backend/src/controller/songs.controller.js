@@ -75,8 +75,46 @@ async function getAllSongsController(req, res) {
     }
 }
 
+async function searchSongController(req, res) {
+    try {
+        const { title } = req.query;
+
+        // validate input
+        if (!title) {
+            return res.status(400).json({
+                message: "title query is required"
+            });
+        }
+
+        // search songs (case insensitive + partial match)
+        const songs = await songModel.find({
+            title: { $regex: title, $options: "i" }
+        });
+
+        // check if songs exist
+        if (songs.length === 0) {
+            return res.status(404).json({
+                message: "song not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "songs fetched successfully",
+            songs
+        });
+
+    } catch (error) {
+        console.error("Search error:", error);
+        res.status(500).json({
+            message: "Failed to search songs",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     uploadSongController,
     getSongController,
-    getAllSongsController
+    getAllSongsController,
+    searchSongController
 }
