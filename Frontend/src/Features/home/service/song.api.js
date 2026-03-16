@@ -14,3 +14,8 @@ export async function getAllSongs() {
     const res = await api.get("/api/songs/all")
     return res.data.songs
 }
+
+export async function searchSongs({title}) {
+        const res = await api.get("/api/songs/search?title="+ title)
+        return res.data
+}

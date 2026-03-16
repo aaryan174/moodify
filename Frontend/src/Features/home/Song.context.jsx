@@ -11,11 +11,13 @@ import { createContext, useState } from "react";
   "title": "Marjaaniya 2 [DownloadMing.Com]",
   "mood": "happy"
     })
+    const [searchSong, setSearchSong] = useState([])
 
     const [loading, setLoading] = useState(false)
+    const [isPlaying, setIsPlaying] = useState(false)
 
     return(
-      <SongContext.Provider value={{song, setSong, loading, setLoading}}>
+      <SongContext.Provider value={{song, setSong, loading, setLoading, searchSong, setSearchSong, isPlaying, setIsPlaying}}>
           {children}
       </SongContext.Provider>
     )

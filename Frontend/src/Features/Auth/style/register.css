@@ -7,8 +7,6 @@
 body {
     margin: 0;
     font-family: 'Outfit', sans-serif;
-    overflow: hidden;
-    /* Prevent scrolling */
 }
 
 .register-container {

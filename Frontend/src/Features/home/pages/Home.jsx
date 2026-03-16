@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Home.css';
 import Navbar from '../components/Navbar';
 import Player from '../components/Player';
@@ -15,9 +15,12 @@ const Home = () => {
     console.warn("SongContext not found, using mockup data");
   }
 
-  const { loading, song, handleSong, setSong } = songData;
+  const { loading, song, handleSong, setSong, isPlaying } = songData;
   const [mood, setMood] = useState('Happy');
   const [allSongs, setAllSongs] = useState([]);
+  const [vizBars, setVizBars] = useState(() => Array.from({ length: 15 }, () => 20));
+  const rafRef = useRef(null);
+  const lastUpdateRef = useRef(0);
   // const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
@@ -34,6 +37,28 @@ const Home = () => {
 
   // Re-scan is now handled directly by the embedded FaceExpression component
   const onRescan = () => {};
+
+  // Visualizer animation loop
+  useEffect(() => {
+    const animate = (timestamp) => {
+      if (timestamp - lastUpdateRef.current > 80) {
+        lastUpdateRef.current = timestamp;
+        setVizBars(Array.from({ length: 15 }, () => Math.floor(Math.random() * 80) + 20));
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    if (isPlaying) {
+      rafRef.current = requestAnimationFrame(animate);
+    } else {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      setVizBars(Array.from({ length: 15 }, () => 20));
+    }
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isPlaying]);
 
   const handleExpressionDetected = (expression) => {
     console.log("[Home] Expression from scanner:", expression);
@@ -120,15 +145,27 @@ const Home = () => {
           {/* Featured Player Section */}
           <section className="featured-player">
             <div className="featured-artwork">
-              <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=600&auto=format&fit=crop" alt="Album Art" />
+              {song?.posterUrl ? (
+                <img src={song.posterUrl} alt={song.title} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-tertiary)', borderRadius: '12px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+                  </svg>
+                </div>
+              )}
             </div>
             <div className="featured-details">
-              <h1 className="featured-title">Neon Dreams</h1>
-              <p className="featured-artist">Cyber-Pulse • Midnight City</p>
+              <h1 className="featured-title">{song?.title || 'No song playing'}</h1>
+              <p className="featured-artist">{song?.mood ? `Mood: ${song.mood}` : 'Detect your mood or pick a track from the queue'}</p>
 
               <div className="audio-visualizer">
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <div key={i} className="visualizer-bar" style={{ height: `${Math.max(20, Math.random() * 100)}%` }}></div>
+                {vizBars.map((h, i) => (
+                  <div
+                    key={i}
+                    className="visualizer-bar"
+                    style={{ height: `${h}%`, transition: 'height 0.08s ease' }}
+                  ></div>
                 ))}
               </div>
 
@@ -193,16 +230,16 @@ const Home = () => {
             <h3>All Uploaded Tracks</h3>
             <button className="view-all-btn">View All →</button>
           </div>
-          <div className="recommendations-grid">
+          <div className="tracks-scroll">
             {allSongs.length > 0 ? allSongs.map(rec => (
-              <div key={rec._id} className="rec-card">
-                <div className="rec-image-container">
-                  <img src={rec.posterUrl} alt={rec.title} className="rec-image" />
+              <div key={rec._id} className="track-card" onClick={() => handleQueueClick(rec)}>
+                <div className="track-poster">
+                  <img src={rec.posterUrl} alt={rec.title} />
                 </div>
                 <h4>{rec.title}</h4>
                 <p>{rec.mood}</p>
               </div>
-            )) : <p>No tracks uploaded yet. Go to Upload to add some!</p>}
+            )) : <p style={{ color: 'var(--text-secondary)' }}>No tracks uploaded yet. Go to Upload to add some!</p>}
           </div>
         </section>
       </main>
