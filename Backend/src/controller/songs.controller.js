@@ -1,3 +1,4 @@
+const NodeID3 = require("node-id3");
 const songModel = require("../model/songs.model");
 const storageService = require("../services/storage.service");
 
@@ -5,33 +6,52 @@ async function uploadSongController(req, res) {
     try {
         const { title, mood } = req.body;
 
-        if (!req.files || !req.files['song'] || !req.files['poster']) {
-            return res.status(400).json({ message: "Both song and poster files are required" });
+        if (!req.files || !req.files['song']) {
+            return res.status(400).json({ message: "Song file is required" });
         }
 
         const songBuffer = req.files['song'][0].buffer;
-        const posterBuffer = req.files['poster'][0].buffer;
-
-        // Ensure title exists to construct filenames
         const safeTitle = title ? title.replace(/[^a-zA-Z0-9\s]/g, "") : "Unknown_Title";
 
-        const [songFile, posterFile] = await Promise.all([
+        // Determine poster buffer: use uploaded file or fall back to ID3 tag
+        let posterBuffer = null;
+        if (req.files['poster'] && req.files['poster'][0]) {
+            posterBuffer = req.files['poster'][0].buffer;
+        } else {
+            // Extract cover art from ID3 tags
+            const tags = NodeID3.read(songBuffer);
+            if (tags && tags.image && tags.image.imageBuffer) {
+                posterBuffer = tags.image.imageBuffer;
+            }
+        }
+
+        // Upload song (always) and poster (if available) in parallel
+        const uploads = [
             storageService.uploadFile({
                 buffer: songBuffer,
                 filename: `${safeTitle}_${Date.now()}.mp3`,
                 folder: "/moodify/songs"
-            }),
-            storageService.uploadFile({
-                buffer: posterBuffer,
-                filename: `${safeTitle}_${Date.now()}.jpeg`, // Keep extension generic or grab from originalname
-                folder: "/moodify/posters"
             })
-        ]);
+        ];
+
+        if (posterBuffer) {
+            uploads.push(
+                storageService.uploadFile({
+                    buffer: posterBuffer,
+                    filename: `${safeTitle}_${Date.now()}.jpeg`,
+                    folder: "/moodify/posters"
+                })
+            );
+        }
+
+        const results = await Promise.all(uploads);
+        const songFile = results[0];
+        const posterFile = results[1] || null;
 
         const song = await songModel.create({
             title: title || "Unknown Title",
             url: songFile.url,
-            posterUrl: posterFile.url,
+            posterUrl: posterFile ? posterFile.url : null,
             mood
         });
 
@@ -47,12 +67,16 @@ async function uploadSongController(req, res) {
 
 async function getSongController(req, res) {
     try {
-        // Keeps the existing random or single mood fetch functionality
         const { mood } = req.query;
-        let query = {};
-        if (mood) query.mood = mood;
+        const matchStage = mood ? { $match: { mood } } : { $match: {} };
 
-        const song = await songModel.findOne(query);
+        // Use $sample to pick a truly random song from matching results
+        const results = await songModel.aggregate([
+            matchStage,
+            { $sample: { size: 1 } }
+        ]);
+
+        const song = results[0] || null;
 
         res.status(200).json({
             message: "song Fetched successfully",

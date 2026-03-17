@@ -15,8 +15,9 @@ const Home = () => {
     console.warn("SongContext not found, using mockup data");
   }
 
-  const { loading, song, handleSong, setSong, isPlaying } = songData;
+  const { loading, song, handleSong, handleNextSong, setSong, isPlaying } = songData;
   const [mood, setMood] = useState('Happy');
+  const [currentMood, setCurrentMood] = useState('happy'); // lowercase key for API
   const [allSongs, setAllSongs] = useState([]);
   const [vizBars, setVizBars] = useState(() => Array.from({ length: 15 }, () => 20));
   const rafRef = useRef(null);
@@ -78,6 +79,7 @@ const Home = () => {
     const label = moodKey.charAt(0).toUpperCase() + moodKey.slice(1);
     console.log("[Home] Mapped moodKey:", moodKey, "label:", label);
     setMood(label);
+    setCurrentMood(moodKey);
     handleSong({ mood: moodKey });
     // After mood-based song is loaded, auto-press the player play button
     setTimeout(() => {
@@ -180,13 +182,18 @@ const Home = () => {
               </div>
 
               <div className="featured-controls">
-                <button className="control-btn icon-btn">
+                <button className="control-btn icon-btn" title="Previous">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
                 <button className="control-btn play-btn">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 </button>
-                <button className="control-btn icon-btn">
+                <button
+                  className="control-btn icon-btn"
+                  title="Next Song"
+                  onClick={() => handleNextSong({ mood: currentMood })}
+                  disabled={loading || !currentMood}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>

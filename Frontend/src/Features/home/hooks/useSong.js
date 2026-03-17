@@ -16,7 +16,6 @@ export const useSong = () => {
     try {
       setLoading(true);
       const data = await getSong({ mood });
-      // API returns { message, song }
       console.log("[useSong] getSong response for mood", mood, data);
       if (data && data.song) {
         console.log("[useSong] Setting song from API", data.song);
@@ -31,25 +30,41 @@ export const useSong = () => {
     }
   }
 
-  async function handleSearchSong({ title }) {
-  try {
-    setLoading(true);
-
-    const data = await searchSongs({ title });
-
-    if (data && data.songs) {
-      setSearchSong(data.songs);
+  // Fetch another random song for the same mood (Next Song button)
+  async function handleNextSong({ mood }) {
+    if (!mood) return;
+    try {
+      setLoading(true);
+      const data = await getSong({ mood });
+      if (data && data.song) {
+        setSong(data.song);
+        // Auto-play the next song
+        setTimeout(() => {
+          const btn = document.querySelector('.pm-play');
+          if (btn) btn.click();
+        }, 300);
+      }
+    } catch (error) {
+      console.error("Failed to fetch next song", error);
+    } finally {
+      setLoading(false);
     }
-    console.log("search result:", data);
-
-  } catch (error) {
-    console.error("Search failed", error);
-  } finally {
-    setLoading(false);
   }
-  
-}
 
-  return { loading, song, handleSong, setSong, handleSearchSong, setSearchSong, searchSong, isPlaying, setIsPlaying };
+  async function handleSearchSong({ title }) {
+    try {
+      setLoading(true);
+      const data = await searchSongs({ title });
+      if (data && data.songs) {
+        setSearchSong(data.songs);
+      }
+      console.log("search result:", data);
+    } catch (error) {
+      console.error("Search failed", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { loading, song, handleSong, handleNextSong, setSong, handleSearchSong, setSearchSong, searchSong, isPlaying, setIsPlaying };
 };
-

@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser")
 const authRoutes = require("./routes/user.routes")
 const songRoutes = require("./routes/songs.routes")
 const cors = require("cors")
+const path = require("path")
 
 
 const app = express();
@@ -12,10 +13,11 @@ app.use(cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true
 }));
-
+app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 
-
-
+app.get(/.*/,(req, res)=>{
+    res.sendFile(path.join(__dirname, "../../Frontend/dist", "index.html"))
+});
 module.exports = app;

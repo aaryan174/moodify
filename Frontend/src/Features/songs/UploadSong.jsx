@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../home/components/Navbar';
 import './UploadSong.css';
 
 const UploadSong = () => {
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [mood, setMood] = useState('happy');
     const [songFile, setSongFile] = useState(null);
@@ -14,8 +16,8 @@ const UploadSong = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!songFile || !posterFile || !title) {
-            setMessage({ type: 'error', text: 'Please provide all required fields (Title, Song, Poster)' });
+        if (!songFile || !title) {
+            setMessage({ type: 'error', text: 'Please provide required fields (Title and Song)' });
             return;
         }
 
@@ -26,7 +28,9 @@ const UploadSong = () => {
         formData.append('title', title);
         formData.append('mood', mood);
         formData.append('song', songFile);
-        formData.append('poster', posterFile);
+        if (posterFile) {
+            formData.append('poster', posterFile);
+        }
 
         try {
             const response = await axios.post('http://localhost:8080/api/songs', formData, {
@@ -36,15 +40,20 @@ const UploadSong = () => {
                 withCredentials: true
             });
 
-            setMessage({ type: 'success', text: 'Song uploaded successfully!' });
+            setMessage({ type: 'success', text: 'Song uploaded successfully! Redirecting...' });
             // Reset form
             setTitle('');
             setMood('happy');
             setSongFile(null);
             setPosterFile(null);
             // reset file inputs visually
-            document.getElementById('song-upload').value = '';
-            document.getElementById('poster-upload').value = '';
+            if (document.getElementById('song-upload')) document.getElementById('song-upload').value = '';
+            if (document.getElementById('poster-upload')) document.getElementById('poster-upload').value = '';
+
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
 
         } catch (error) {
             console.error('Upload Error:', error);
