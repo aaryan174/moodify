@@ -13,11 +13,11 @@ app.use(cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true
 }));
-app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
+app.use(express.static(path.join(__dirname, "../public")));
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 
 app.get(/.*/,(req, res)=>{
-    res.sendFile(path.join(__dirname, "../../Frontend/dist", "index.html"))
+    res.sendFile(path.join(__dirname, "../public/assets", "index.html"))
 });
 module.exports = app;
