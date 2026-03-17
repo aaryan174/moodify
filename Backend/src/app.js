@@ -15,10 +15,10 @@ app.use(cors({
 }));
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
 
 
 app.get(/.*/,(req, res)=>{
-    res.sendFile(path.join(__dirname, "../public", "index.html"))
+    res.sendFile(path.join(__dirname, "../../Frontend/dist", "index.html"))
 });
 module.exports = app;
