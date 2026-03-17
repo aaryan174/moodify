@@ -7,4 +7,4 @@ four layer in react
 
 
 
-ye chaar layer se ek beautifully ek react application ban jati h clean codebase ke sath 
+ye chaar layer se ek beautiful ek react application ban jati h clean codebase ke sath 
