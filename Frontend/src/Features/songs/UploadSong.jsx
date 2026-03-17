@@ -33,7 +33,7 @@ const UploadSong = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/songs', formData, {
+            const response = await axios.post('https://moodify-zqz0.onrender.com/api/songs', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
