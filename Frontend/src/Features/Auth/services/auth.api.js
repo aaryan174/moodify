@@ -1,7 +1,9 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL:"https://moodify-zqz0.onrender.com",
+    baseURL: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8080"
+        : "",
     withCredentials: true
 })
 

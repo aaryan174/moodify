@@ -3,7 +3,7 @@ import './Home.css';
 import Navbar from '../components/Navbar';
 import Player from '../components/Player';
 import { useSong } from '../hooks/useSong';
-import { getAllSongs } from '../service/song.api';
+import { getAllSongs, getSongsByMood } from '../service/song.api';
 import FaceExpression from '../../Expression/Components/FaceExpression';
 import { usePlaylists } from '../hooks/usePlaylists';
 
@@ -20,12 +20,14 @@ const Home = () => {
   const [mood, setMood] = useState('Happy');
   const [currentMood, setCurrentMood] = useState('happy'); // lowercase key for API
   const [allSongs, setAllSongs] = useState([]);
+  const [moodSongs, setMoodSongs] = useState([]);
+  const [expandedPlaylist, setExpandedPlaylist] = useState(null);
   const [vizBars, setVizBars] = useState(() => Array.from({ length: 15 }, () => 20));
   const rafRef = useRef(null);
   const lastUpdateRef = useRef(0);
   // const [showScanner, setShowScanner] = useState(false);
 
-  const { playlists, loading: playlistsLoading, create: createPlaylist, addTrack, removePlaylist, refresh: refreshPlaylists } = usePlaylists();
+  const { playlists, loading: playlistsLoading, create: createPlaylist, addTrack, removeTrack, removePlaylist, refresh: refreshPlaylists } = usePlaylists();
   const [newPlaylistName, setNewPlaylistName] = useState('');
 
   useEffect(() => {
@@ -39,6 +41,19 @@ const Home = () => {
     };
     fetchAllSongs();
   }, []);
+
+  // Fetch mood-based songs when currentMood changes
+  useEffect(() => {
+    const fetchMoodSongs = async () => {
+      try {
+        const data = await getSongsByMood({ mood: currentMood });
+        setMoodSongs(data.songs || []);
+      } catch (error) {
+        console.error("Failed to fetch mood songs", error);
+      }
+    };
+    fetchMoodSongs();
+  }, [currentMood]);
 
   // Re-scan is now handled directly by the embedded FaceExpression component
   const onRescan = () => {};
@@ -85,6 +100,12 @@ const Home = () => {
     setMood(label);
     setCurrentMood(moodKey);
     handleSong({ mood: moodKey });
+
+    // Instantly refresh moodSongs sidebar queue
+    getSongsByMood({ mood: moodKey }).then(data => {
+      setMoodSongs(data.songs || []);
+    }).catch(err => console.error(err));
+
     // After mood-based song is loaded, auto-press the player play button
     setTimeout(() => {
       const btn = document.querySelector('.pm-play');
@@ -106,6 +127,7 @@ const Home = () => {
       }
     }, 200);
   };
+
 
   return (
     <div className="home-container">
@@ -209,12 +231,12 @@ const Home = () => {
             <div className="queue-header">
               <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
-                Mood Queue
+                Mood Queue ({mood})
               </h3>
             </div>
             <div className="queue-list">
-              {allSongs.length > 0 ? (
-                allSongs.map(track => (
+              {moodSongs.length > 0 ? (
+                moodSongs.map(track => (
                   <div
                     key={track._id}
                     className="queue-item"
@@ -229,7 +251,7 @@ const Home = () => {
                   </div>
                 ))
               ) : (
-                <p>No tracks uploaded yet. Go to Upload to add some!</p>
+                <p>No tracks loaded for this mood.</p>
               )}
             </div>
 
@@ -257,35 +279,71 @@ const Home = () => {
                 <p>Loading playlists...</p>
               ) : playlists.length > 0 ? (
                 playlists.map(pl => (
-                  <div key={pl._id} className="playlist-item">
-                    <div className="playlist-info">
-                      <strong>{pl.name}</strong>
-                      <small>{pl.tracks?.length || 0} tracks</small>
+                  <div key={pl._id} className="playlist-wrapper">
+                    <div 
+                      className={`playlist-item ${expandedPlaylist === pl._id ? 'active' : ''}`}
+                      onClick={() => setExpandedPlaylist(expandedPlaylist === pl._id ? null : pl._id)}
+                    >
+                      <div className="playlist-info">
+                        <strong>{pl.name}</strong>
+                        <small>{pl.tracks?.length || 0} tracks</small>
+                      </div>
+                      <div className="playlist-actions" onClick={e => e.stopPropagation()}>
+                        <button
+                          className="btn-secondary add-current-btn"
+                          disabled={!song?._id}
+                          onClick={async () => {
+                            if (!song?._id) return;
+                            await addTrack(pl._id, song._id);
+                          }}
+                        >
+                          + Add Current
+                        </button>
+                        <button
+                          className="btn-danger delete-pl-btn"
+                          onClick={async () => {
+                            await removePlaylist(pl._id);
+                            if (expandedPlaylist === pl._id) setExpandedPlaylist(null);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                    <div className="playlist-actions">
-                      <button
-                        className="btn-secondary"
-                        disabled={!song?._id}
-                        onClick={async () => {
-                          if (!song?._id) return;
-                          await addTrack(pl._id, song._id);
-                          refreshPlaylists();
-                        }}
-                      >Add current</button>
-                      <button
-                        className="btn-danger"
-                        onClick={async () => {
-                          await removePlaylist(pl._id);
-                        }}
-                      >Delete</button>
-                    </div>
+
+                    {expandedPlaylist === pl._id && (
+                      <div className="playlist-tracks-dropdown">
+                        {pl.tracks && pl.tracks.length > 0 ? (
+                          pl.tracks.map(track => (
+                            <div key={track._id} className="playlist-track-item" onClick={() => handleQueueClick(track)}>
+                              <img src={track.posterUrl} alt={track.title} className="track-thumb" />
+                              <div className="track-details">
+                                <h5>{track.title}</h5>
+                                <span>{track.mood}</span>
+                              </div>
+                              <button 
+                                className="remove-track-btn" 
+                                title="Remove track from playlist"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  await removeTrack(pl._id, track._id);
+                                }}
+                              >
+                                &times;
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="no-tracks-text">No tracks in this playlist.</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))
               ) : (
                 <p>No playlists yet.</p>
               )}
             </div>
-
           </aside>
         </div>
 

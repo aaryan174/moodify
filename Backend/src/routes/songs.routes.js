@@ -1,6 +1,6 @@
 const express = require("express");
 const upload = require("../middleware/upload.middleware");
-const { uploadSongController, getSongController, getAllSongsController, searchSongController } = require("../controller/songs.controller");
+const { uploadSongController, getSongController, getAllSongsController, searchSongController, getSongsByMoodController } = require("../controller/songs.controller");
 
 const router = express.Router();
 
@@ -13,5 +13,7 @@ router.post("/", upload.fields([
 router.get("/", getSongController);
 router.get("/all", getAllSongsController);
 router.get("/search", searchSongController);
+router.get("/mood", getSongsByMoodController);
 
 module.exports = router;
+

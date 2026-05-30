@@ -1018,4 +1018,215 @@ html {
     .recommendations-grid {
         grid-template-columns: repeat(5, 1fr);
     }
-}
+}
+
+/* Playlist Section Styling */
+.playlist-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.playlist-section h4 {
+    font-size: 1.1rem;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.create-playlist {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.create-playlist input {
+    flex: 1;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.create-playlist input:focus {
+    border-color: var(--text-secondary);
+}
+
+.create-playlist button {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.playlist-wrapper {
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.playlist-wrapper:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.playlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+
+.playlist-item.active {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.playlist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.playlist-info strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.playlist-info small {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.playlist-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.playlist-actions button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.playlist-actions .add-current-btn {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.playlist-actions .add-current-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-primary);
+}
+
+.playlist-actions .delete-pl-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 20px;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.playlist-actions .delete-pl-btn:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+/* Playlist Tracks Dropdown */
+.playlist-tracks-dropdown {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.playlist-track-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 0.25rem;
+    position: relative;
+}
+
+.playlist-track-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.playlist-track-item:last-child {
+    margin-bottom: 0;
+}
+
+.playlist-track-item .track-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.playlist-track-item .track-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.playlist-track-item .track-details h5 {
+    margin: 0 0 0.1rem 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.playlist-track-item .track-details span {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.playlist-track-item .remove-track-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playlist-track-item .remove-track-btn:hover {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.no-tracks-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 0.75rem 0;
+    margin: 0;
+}
+
