@@ -1,0 +1,15 @@
+{
+  "name": "moodify-root",
+  "version": "1.0.0",
+  "description": "Root package for Moodify to build and run frontend and backend together on Render",
+  "scripts": {
+    "install-frontend": "npm install --prefix Frontend",
+    "install-backend": "npm install --prefix Backend",
+    "build-frontend": "npm run build --prefix Frontend",
+    "build": "npm run install-frontend && npm run build-frontend && npm run install-backend",
+    "start": "npm start --prefix Backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
