@@ -5,6 +5,7 @@ import Player from '../components/Player';
 import { useSong } from '../hooks/useSong';
 import { getAllSongs } from '../service/song.api';
 import FaceExpression from '../../Expression/Components/FaceExpression';
+import { usePlaylists } from '../hooks/usePlaylists';
 
 const Home = () => {
   // Try to use the hook, providing a fallback if context isn't wrapped yet
@@ -23,6 +24,9 @@ const Home = () => {
   const rafRef = useRef(null);
   const lastUpdateRef = useRef(0);
   // const [showScanner, setShowScanner] = useState(false);
+
+  const { playlists, loading: playlistsLoading, create: createPlaylist, addTrack, removePlaylist, refresh: refreshPlaylists } = usePlaylists();
+  const [newPlaylistName, setNewPlaylistName] = useState('');
 
   useEffect(() => {
     const fetchAllSongs = async () => {
@@ -228,6 +232,60 @@ const Home = () => {
                 <p>No tracks uploaded yet. Go to Upload to add some!</p>
               )}
             </div>
+
+            <div className="playlist-section">
+              <h4>Your Playlists</h4>
+
+              <div className="create-playlist">
+                <input
+                  type="text"
+                  placeholder="New playlist name"
+                  value={newPlaylistName}
+                  onChange={(e) => setNewPlaylistName(e.target.value)}
+                />
+                <button
+                  className="btn-primary"
+                  onClick={async () => {
+                    if (!newPlaylistName) return;
+                    await createPlaylist(newPlaylistName);
+                    setNewPlaylistName('');
+                  }}
+                >Create</button>
+              </div>
+
+              {playlistsLoading ? (
+                <p>Loading playlists...</p>
+              ) : playlists.length > 0 ? (
+                playlists.map(pl => (
+                  <div key={pl._id} className="playlist-item">
+                    <div className="playlist-info">
+                      <strong>{pl.name}</strong>
+                      <small>{pl.tracks?.length || 0} tracks</small>
+                    </div>
+                    <div className="playlist-actions">
+                      <button
+                        className="btn-secondary"
+                        disabled={!song?._id}
+                        onClick={async () => {
+                          if (!song?._id) return;
+                          await addTrack(pl._id, song._id);
+                          refreshPlaylists();
+                        }}
+                      >Add current</button>
+                      <button
+                        className="btn-danger"
+                        onClick={async () => {
+                          await removePlaylist(pl._id);
+                        }}
+                      >Delete</button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>No playlists yet.</p>
+              )}
+            </div>
+
           </aside>
         </div>
 

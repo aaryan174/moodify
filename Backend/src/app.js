@@ -15,6 +15,8 @@ app.use(cors({
 }));
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
+const playlistRoutes = require("./routes/playlists.routes");
+app.use("/api/playlists", playlistRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 
 
